@@ -1,30 +1,66 @@
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+
+const eventFn = () => {
+  console.log("h1 clicado")
+
+
+}
 
 
 
 function App () {
-  const [reverse, setReverse] = useState(false);
-  const [contador, setContador] = useState(0)
-  const reverseClass = reverse ? 'reverse' : ''
+  const [counter, setCounter] = useState(0)
 
-  const handleClick = () => {
-    setContador(contador+1)
-    setReverse(!reverse)
-  }
+
+  //componenDidUpdate - executa toda vez que o component atualiza
+
+  useEffect(()=> {
+    console.log("componentDidUpdate")
+
+  })
+
+
+  //componenDidMount - executa 1x
+
+  useEffect(()=> {
+    console.log("componentDidMount")
+
+  }, []) // como passamos um array de dependencias vazio, ele executa apenas 1x
+
+
+  //Com dependencia - executa quando a dependencia mudar
+
+  useEffect(()=> {
+    console.log("Contador mudou para",counter)
+
+  }, [counter]) // repare que passamos counter como dependencia
+
+
+
+
+
+    useEffect(()=> {
+      document.querySelector("h1")?.addEventListener("click", eventFn); //JS puro
+      // ? Encadeamento opcional. Caso haja o componente h1, o que esta depois da virgula sera executado. Caso nao, nao sera.
+    
+
+      // componentWillUnmount - Serve para limpar os lixos da pagina
+    return () => {
+      document.querySelector("h1")?.removeEventListener("click", eventFn);
+    }
+    
+    }, []) 
+
+
+//lifecyclemethotds
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className={`App-logo ${reverseClass}`} alt="logo" />
-        <h1>Contador: {contador}</h1>
-        <button 
-        type="button"
-        onClick = {handleClick}>
-          Reverse {reverseClass}
-        </button>
-      </header>
+      <h1>Contador: {counter}</h1>
+      <button onClick={()=> setCounter(counter+1)}>+</button>
     </div>
   )
 
