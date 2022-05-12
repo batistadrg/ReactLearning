@@ -1,43 +1,66 @@
-import logo from './logo.svg';
-import P from "prop-types"
 import './App.css';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useMemo, useEffect, useState} from 'react'
+import P from 'prop-types'
 
+const Post = ({post}) => {
+  console.log("filhos renderizou")
+  return (
+    <div key = {post.id} className='post'>
+      <h1>{post.title}</h1>
+      <body>{post.body}</body>
+    </div>
+  )
+}
 
-
-
-// React.memo serve para memorizar o componente caso ele nao mude, caso ele mude, ela muda tambem
-
-const Button = React.memo(function Button({incrementButton}) {
-  console.log("Filho renderizou")
-  return <button onClick={() => incrementButton(10)}>+</button>
-}) // component chamado Button
-
-
-Button.propTypes = {
-  incrementButton: P.func,
-};
+Post.propTypes = {
+  post: P.shape({
+    id: P.number,
+    title: P.string,
+    body: P.string,
+  }),
+}
 
 
 function App () {
-  const [counter, setCounter] = useState(0)
 
-  // Serve para recriar a funcao apenas se a dependencia mudar
-  const incrementCounter = useCallback((num) => {
-    setCounter((c) => c + num)
-    // funcao basica de callback
+  const [posts, setPosts] = useState([])
+  const [value, setValue] = useState('')
+  console.log('Pai renderizou')
 
-  }, [])
 
-  console.log("Pai renderizou")
+  //Component did mount
+  useEffect( () => {
+    setTimeout(function (){
+      fetch('https://jsonplaceholder.typicode.com/posts')
+      .then((r) => r.json())
+      .then((r) => setPosts(r));
+    }, 3000)
+  },[])
+
+
 
   return (
-    <div className="App">
-      <h1>Contador: {counter}</h1>
-      <Button incrementButton={incrementCounter}></Button>
+    <div className='App'>
+      <p>
+        <input 
+        type="search" 
+        value={value} 
+        onChange={(e)=> setValue(e.target.value) }/>
+
+      </p>
+
+      {useMemo(()=> {
+        return (
+          posts.length > 0 &&
+        posts.map((post)=>(<Post key = {post.id} post={post}/>))
+        )
+      }, [posts])}
+
+
+      
+      {posts.length <= 0 && <h1>Carregando...</h1>}
     </div>
   )
-
 }
 
 export default App;
