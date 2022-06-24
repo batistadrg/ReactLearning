@@ -2,11 +2,11 @@ import './App.css';
 import React, {useMemo, useEffect, useState} from 'react'
 import P from 'prop-types'
 
-const Post = ({post}) => {
+const Post = ({post, handleClick}) => {
   console.log("filhos renderizou")
   return (
     <div key = {post.id} className='post'>
-      <h1>{post.title}</h1>
+      <h1 onClick={() => handleClick(post.title)}>{post.title}</h1>
       <body>{post.body}</body>
     </div>
   )
@@ -18,6 +18,7 @@ Post.propTypes = {
     title: P.string,
     body: P.string,
   }),
+  handleClick: P.func,
 }
 
 
@@ -30,13 +31,17 @@ function App () {
 
   //Component did mount
   useEffect( () => {
-    setTimeout(function (){
-      fetch('https://jsonplaceholder.typicode.com/posts')
-      .then((r) => r.json())
-      .then((r) => setPosts(r));
-    }, 3000)
+    fetch('https://jsonplaceholder.typicode.com/posts')
+    .then((r) => r.json())
+    .then((r) => setPosts(r));
   },[])
 
+  const handleClick = (value) => {
+
+    setValue(value)
+
+
+  }
 
 
   return (
@@ -52,7 +57,7 @@ function App () {
       {useMemo(()=> {
         return (
           posts.length > 0 &&
-        posts.map((post)=>(<Post key = {post.id} post={post}/>))
+        posts.map((post)=>(<Post key = {post.id} post={post} handleClick={handleClick}/>))
         )
       }, [posts])}
 
